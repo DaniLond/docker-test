@@ -1,5 +1,7 @@
 # Taller Docker Test - Reporte
 
+Leidy Daniela Londoño Candelo - A00392917
+
 ## 📌 Descripción del Proyecto
 
 Este proyecto es una aplicación en **React** que permite visualizar personajes de la serie **Rick and Morty** mediante una interfaz intuitiva.
@@ -90,18 +92,22 @@ jobs:
 ### 🔹 PASO 5: Verificar el Build
 
 1. Verificamos que el workflow se ejecute correctamente.
-
+![alt text](image-1.png)
 
 ---
 
 ### 🔹 PASO 6: Verificar la Imagen en Docker Hub
 
 1. Verificamos que la imagen se haya subido en Docker Hub.
+![alt text](image-2.png)
 
 ---
 
 ### 🔹 PASO 7: Ejecución y visualización local
 
+![alt text](image-3.png)
+![alt text](image-4.png)
 
+![alt text](image-5.png)
 ---
 
