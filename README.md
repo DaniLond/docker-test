@@ -1,71 +1,107 @@
-# Getting Started with Create React App
+# Taller Docker Test - Reporte
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-hi
+## 📌 Descripción del Proyecto
 
-## Available Scripts
+Este proyecto es una aplicación en **React** que permite visualizar personajes de la serie **Rick and Morty** mediante una interfaz intuitiva.
+La aplicación consume la **Rick and Morty API** para obtener información actualizada de los personajes.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🚀 Pasos de Configuración
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 🔹 PASO 1: Fork del Repositorio
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. Se realizo el fork del repositorio
+4. Se clono para empezar a trabajar en el taller
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 🔹 PASO 2: Crear el Dockerfile
 
-### `npm run build`
+En la raíz del proyecto crea un archivo **Dockerfile**:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```dockerfile
+FROM node:18-alpine as build
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+FROM nginx:alpine
+COPY --from=build /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 🔹 PASO 3: Configurar GitHub Action
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Cree la carpeta `.github/workflows/` y dentro el archivo **docker-build.yml**:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```yaml
+name: Docker Build and Push
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 
-## Learn More
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-### Code Splitting
+      - name: Build and Push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/rick-morty-app:latest
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+### 🔹 PASO 4: Configurar Secretos en GitHub
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1. En Docker Hub se creo un **Access Token** 
 
-### Making a Progressive Web App
+2. En el repositorio de GitHub se agregaron los secretos:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+* `DOCKER_USERNAME`: tu usuario de Docker Hub.
+* `DOCKER_PASSWORD`: el token generado.
 
-### Advanced Configuration
+![alt text](image.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+### 🔹 PASO 5: Verificar el Build
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. Verificamos que el workflow se ejecute correctamente.
 
-### `npm run build` fails to minify
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+### 🔹 PASO 6: Verificar la Imagen en Docker Hub
+
+1. Verificamos que la imagen se haya subido en Docker Hub.
+
+---
+
+### 🔹 PASO 7: Ejecución y visualización local
+
+
+---
+
